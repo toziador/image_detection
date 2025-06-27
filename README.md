@@ -25,6 +25,8 @@ expects a recent YOLOv5 release such as v7.0.
 python3 detect_images.py /path/to/images
 ```
 
+Use `--conf` to adjust the confidence threshold (default: `0.5`).
+
 
 The results will be stored in `var/detections/YYYY-MM-DD-hh-mm-ss`.
 
@@ -40,6 +42,8 @@ detecciones.
 ```bash
 python usb_images_presence_detector.py
 ```
+
+You can also set a confidence threshold with `--conf` (default: `0.5`).
 
 Al finalizar se muestran estadísticas de las imágenes procesadas y las
 detecciones encontradas.
