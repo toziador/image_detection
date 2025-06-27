@@ -21,6 +21,12 @@ def parse_args():
         description='Detect persons, cars and animals in images and copy them to var/detections/YYYY-MM-DD-hh-mm-ss inside the project directory.'
     )
     parser.add_argument('directory', help='Directory to search for images recursively')
+    parser.add_argument(
+        '--conf',
+        type=float,
+        default=0.5,
+        help='Confidence threshold for detections'
+    )
     return parser.parse_args()
 
 
@@ -45,6 +51,7 @@ def main() -> None:
     model = torch.hub.load(
         'ultralytics/yolov5:v7.0', 'yolov5s', pretrained=True
     )
+    model.conf = args.conf
 
     copied = 0
     for root, _, files in os.walk(src_dir):

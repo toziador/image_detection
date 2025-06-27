@@ -74,9 +74,10 @@ def is_image(filename: str) -> bool:
     )
 
 
-def detect_images(root_dir: Path, out_dir: Path):
+def detect_images(root_dir: Path, out_dir: Path, conf: float):
     print('Loading model...')
     model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
+    model.conf = conf
 
     processed = 0
     skipped = 0
@@ -125,11 +126,17 @@ def detect_images(root_dir: Path, out_dir: Path):
 
 def main():
     parser = argparse.ArgumentParser(description='USB Images Presence Detector')
-    parser.parse_args()  # For symmetry, no args currently
+    parser.add_argument(
+        '--conf',
+        type=float,
+        default=0.5,
+        help='Confidence threshold for detections'
+    )
+    args = parser.parse_args()
     drives = get_external_drives()
     drive = choose_drive(drives)
     out_dir = ask_output_directory()
-    detect_images(Path(drive), out_dir)
+    detect_images(Path(drive), out_dir, args.conf)
 
 
 if __name__ == '__main__':
