@@ -1,0 +1,71 @@
+#!/usr/bin/env python3
+import argparse
+import datetime
+import os
+import shutil
+from pathlib import Path
+
+import torch
+
+ANIMAL_CLASSES = {
+    'bird', 'cat', 'dog', 'horse', 'sheep', 'cow', 'elephant',
+    'bear', 'zebra', 'giraffe'
+}
+PERSON_CLASSES = {'person'}
+CAR_CLASSES = {'car'}
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description='Detect persons, cars and animals in images and copy them to /var/detection/YYYY-MM-DD-hh-mm-ss.'
+    )
+    parser.add_argument('directory', help='Directory to search for images recursively')
+    return parser.parse_args()
+
+
+def is_image(filename: str) -> bool:
+    return filename.lower().endswith((
+        '.jpg', '.jpeg', '.png', '.bmp', '.gif', '.tiff', '.webp'
+    ))
+
+
+def main() -> None:
+    args = parse_args()
+    src_dir = Path(args.directory).resolve()
+    if not src_dir.is_dir():
+        raise SystemExit(f'{src_dir} is not a valid directory')
+
+    timestamp = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
+    out_dir = Path('/var/detection') / timestamp
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    print('Loading model...')
+    model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
+
+    copied = 0
+    for root, _, files in os.walk(src_dir):
+        for file in files:
+            if not is_image(file):
+                continue
+            img_path = Path(root) / file
+            results = model(str(img_path))
+            detected_labels = results.pandas().xyxy[0]['name'].tolist()
+            if any(
+                label in PERSON_CLASSES
+                or label in CAR_CLASSES
+                or label in ANIMAL_CLASSES
+                for label in detected_labels
+            ):
+                relative = img_path.relative_to(src_dir)
+                destination = out_dir / relative
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(img_path, destination)
+                copied += 1
+                print(f'Copied {img_path} -> {destination}')
+
+    print(f'Total images copied: {copied}')
+    print(f'Results stored in: {out_dir}')
+
+
+if __name__ == '__main__':
+    main()
