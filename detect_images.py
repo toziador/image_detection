@@ -6,6 +6,7 @@ import shutil
 from pathlib import Path
 
 import torch
+from PIL import UnidentifiedImageError
 
 ANIMAL_CLASSES = {
     'bird', 'cat', 'dog', 'horse', 'sheep', 'cow', 'elephant',
@@ -49,7 +50,11 @@ def main() -> None:
             if not is_image(file):
                 continue
             img_path = Path(root) / file
-            results = model(str(img_path))
+            try:
+                results = model(str(img_path))
+            except UnidentifiedImageError:
+                print(f'Skipping {img_path}: cannot identify image')
+                continue
             detected_labels = results.pandas().xyxy[0]['name'].tolist()
             if any(
                 label in PERSON_CLASSES
