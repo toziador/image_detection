@@ -10,13 +10,14 @@ input directory structure is not recreated).
 
 ### Installation
 
-Install or upgrade the `ultralytics` package (which provides YOLOv5):
+Install the required dependencies using the provided requirements file:
 
 ```bash
-pip install -U ultralytics
+pip install -r requirements.txt
 ```
 
-The script expects a recent YOLOv5 release such as v7.0.
+YOLOv5 depends on IPython, so it is included in `requirements.txt`. The script
+expects a recent YOLOv5 release such as v7.0.
 
 ### Usage
 
