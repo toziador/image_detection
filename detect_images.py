@@ -63,8 +63,8 @@ def main() -> None:
                 for label in detected_labels
             ):
                 relative = img_path.relative_to(src_dir)
-                destination = out_dir / relative
-                destination.parent.mkdir(parents=True, exist_ok=True)
+                flat_name = "_".join(relative.parts)
+                destination = out_dir / flat_name
                 shutil.copy2(img_path, destination)
                 copied += 1
                 print(f'Copied {img_path} -> {destination}')
