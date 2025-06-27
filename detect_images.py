@@ -17,7 +17,7 @@ CAR_CLASSES = {'car'}
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description='Detect persons, cars and animals in images and copy them to /var/detection/YYYY-MM-DD-hh-mm-ss.'
+        description='Detect persons, cars and animals in images and copy them to var/detections/YYYY-MM-DD-hh-mm-ss inside the project directory.'
     )
     parser.add_argument('directory', help='Directory to search for images recursively')
     return parser.parse_args()
@@ -36,7 +36,8 @@ def main() -> None:
         raise SystemExit(f'{src_dir} is not a valid directory')
 
     timestamp = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
-    out_dir = Path('/var/detection') / timestamp
+    script_dir = Path(__file__).resolve().parent
+    out_dir = script_dir / 'var' / 'detections' / timestamp
     out_dir.mkdir(parents=True, exist_ok=True)
 
     print('Loading model...')
