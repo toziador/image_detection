@@ -42,7 +42,9 @@ def main() -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
 
     print('Loading model...')
-    model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
+    model = torch.hub.load(
+        'ultralytics/yolov5:v7.0', 'yolov5s', pretrained=True
+    )
 
     copied = 0
     for root, _, files in os.walk(src_dir):
@@ -63,8 +65,8 @@ def main() -> None:
                 for label in detected_labels
             ):
                 relative = img_path.relative_to(src_dir)
-                destination = out_dir / relative
-                destination.parent.mkdir(parents=True, exist_ok=True)
+                flat_name = "_".join(relative.parts)
+                destination = out_dir / flat_name
                 shutil.copy2(img_path, destination)
                 copied += 1
                 print(f'Copied {img_path} -> {destination}')
