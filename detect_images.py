@@ -42,7 +42,9 @@ def main() -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
 
     print('Loading model...')
-    model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
+    model = torch.hub.load(
+        'ultralytics/yolov5:v7.0', 'yolov5s', pretrained=True
+    )
 
     copied = 0
     for root, _, files in os.walk(src_dir):
